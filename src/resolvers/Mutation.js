@@ -9,16 +9,29 @@ import { sendAdminCredentialsEmail } from "../util/sendAdminCredentialsEmail.js"
 import { randomPasswordGenerator } from "../util/randomPasswordGenerator.js";
 import { checkEmailOrUsername } from "../util/checkEmailOrUsername.js";
 
-const genericOtpFunc = async (createdUser, ctx) => {
+const genericOtpFunc = async (createdUser, ctx, bodyTemplate) => {
   let data;
   if (createdUser.type == "phoneNo" && createdUser?.username) {
     data = await generatePhoneOtp(ctx, createdUser.username, userId);
   }
   if (createdUser.type == "email" && createdUser.emails.length) {
-    data = await sendEmailOTP(ctx, createdUser.emails[0].address, "temp");
+    data = await sendEmailOTP(ctx, createdUser.emails[0].address, bodyTemplate);
   }
 
   return data;
+};
+
+const emailUsernameCheck = async (str) => {
+  // Regular expression patterns to match email and username
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  if (emailPattern.test(str)) {
+    console.log("email");
+    return true;
+  } else {
+    console.log("username");
+    return false;
+  }
 };
 
 export default {
@@ -145,13 +158,22 @@ export default {
       };
       const accountAdded = await Accounts.insertOne(account);
       let updateUser = { $set: { "emails.0.verified": true } };
-      const { result } = await users.updateOne({ _id: userId }, updateUser, options);
+      const { result } = await users.updateOne(
+        { _id: userId },
+        updateUser,
+        options
+      );
     }
 
     const createdUser = await accountsServer.findUserById(userId);
 
     //send email to newly created Admin
-    let data = await sendAdminCredentialsEmail(ctx, createdUser.emails[0].address, randomPassword, "temp");
+    let data = await sendAdminCredentialsEmail(
+      ctx,
+      createdUser.emails[0].address,
+      randomPassword,
+      "temp"
+    );
 
     return {
       userId,
@@ -177,7 +199,10 @@ export default {
 
     //check if either email or username provided
     if (!(user?.email || user.username)) {
-      throw new ReactionError("invalid-parameter", "Please provide either an email address or a username to proceed.");
+      throw new ReactionError(
+        "invalid-parameter",
+        "Please provide either an email address or a username to proceed."
+      );
     }
 
     try {
@@ -255,7 +280,11 @@ export default {
     const createdUser = await accountsServer.findUserById(userId);
 
     //function to check which service(email or sms) to send otp
-    let genericOtpResponse = await genericOtpFunc(createdUser, ctx);
+    let genericOtpResponse = await genericOtpFunc(
+      createdUser,
+      ctx,
+      "accounts/otpEmail"
+    );
 
     return {
       userId,
@@ -311,7 +340,9 @@ export default {
 
     if (!accountsServer.options.enableAutologin) {
       return {
-        userId: accountsServer.options.ambiguousErrorMessages ? null : userData._id,
+        userId: accountsServer.options.ambiguousErrorMessages
+          ? null
+          : userData._id,
       };
     }
 
@@ -340,7 +371,10 @@ export default {
     }
 
     if (!isVerified) {
-      throw new ReactionError("not-found", "User is not verified,Please verify yout account");
+      throw new ReactionError(
+        "not-found",
+        "User is not verified,Please verify yout account"
+      );
     }
 
     console.log("newObj is ", newObj, userData);
@@ -350,7 +384,9 @@ export default {
     console.log("createdUser is ", createdUser);
 
     //authenticating password
-    const authenticated = await injector.get(server_1.AccountsServer).loginWithService("password", newObj, infos);
+    const authenticated = await injector
+      .get(server_1.AccountsServer)
+      .loginWithService("password", newObj, infos);
 
     console.log("authenticated is ", authenticated);
 
@@ -374,16 +410,21 @@ export default {
     let userData;
 
     if (!user.loginTypeValue) {
-      throw new ReactionError("invalid-parameter", "Please provide either an email address or a username to proceed.");
+      throw new ReactionError(
+        "invalid-parameter",
+        "Please provide either an email address or a username to proceed."
+      );
     }
 
     //check if user verified or not
-    let result = await checkEmailOrUsername(user);
+    let result = await emailUsernameCheck(user.loginTypeValue);
 
     console.log("Response is ", result);
 
     if (result) {
-      userData = await users.findOne({ "emails.address": user.loginTypeValue });
+      userData = await users.findOne({
+        "emails.0.address": user.loginTypeValue,
+      });
     } else {
       userData = await users.findOne({ username: user.loginTypeValue });
     }
@@ -397,7 +438,11 @@ export default {
       userId: userData._id,
     });
 
-    let data = await genericOtpFunc(userData, ctx);
+    let data = await genericOtpFunc(
+      userData,
+      ctx,
+      "accounts/resetPasswordOtpEmail"
+    );
 
     if (data) {
       return {
@@ -430,7 +475,10 @@ export default {
 
     //check if userId provided or not
     if (!user.userId) {
-      throw new ReactionError("invalid-parameter", "Please provide userId to proceed.");
+      throw new ReactionError(
+        "invalid-parameter",
+        "Please provide userId to proceed."
+      );
     }
 
     //finding the user on the basis of userId
@@ -459,10 +507,18 @@ export default {
           }
 
           //updating the user to verified user
-          const { result } = await users.updateOne({ _id: userObj._id }, updateOtp, options);
+          const { result } = await users.updateOne(
+            { _id: userObj._id },
+            updateOtp,
+            options
+          );
 
           //updating the account of user after verification
-          const { result: accountResult } = await Accounts.updateOne({ _id: userObj._id }, updateOtp, options);
+          const { result: accountResult } = await Accounts.updateOne(
+            { _id: userObj._id },
+            updateOtp,
+            options
+          );
 
           return result.n;
         } else {
@@ -495,12 +551,18 @@ export default {
 
     //checking if userId provided
     if (!user.userId) {
-      throw new ReactionError("invalid-parameter", "Please provide userId to proceed.");
+      throw new ReactionError(
+        "invalid-parameter",
+        "Please provide userId to proceed."
+      );
     }
 
     //checking if new password provided
     if (!user.password) {
-      throw new ReactionError("invalid-parameter", "Please provide new password");
+      throw new ReactionError(
+        "invalid-parameter",
+        "Please provide new password"
+      );
     }
 
     //checking if account is deleted or not
@@ -525,7 +587,10 @@ export default {
           let updateOtp;
           const options = { new: true };
 
-          console.log("createdUser.services.password.bcrypt ", userObj.services.password.bcrypt);
+          console.log(
+            "createdUser.services.password.bcrypt ",
+            userObj.services.password.bcrypt
+          );
 
           const hashedPassword = bcrypt.hashSync(user.password, salt);
 
@@ -537,13 +602,20 @@ export default {
               },
             };
           } else {
-            throw new ReactionError("not-found", "User login type not recognized");
+            throw new ReactionError(
+              "not-found",
+              "User login type not recognized"
+            );
           }
 
           console.log("Original Password:", user.password);
           console.log("Hashed Password:", hashedPassword);
 
-          const { result } = await users.updateOne({ _id: userObj._id }, updateOtp, options);
+          const { result } = await users.updateOne(
+            { _id: userObj._id },
+            updateOtp,
+            options
+          );
           return result.n > 0 ? true : false;
         } else {
           console.log("OTP has expired");
@@ -594,7 +666,9 @@ export default {
     const { injector, infos, collections } = ctx;
     const { users } = collections;
     console.log("authenticate");
-    const authenticated = await injector.get(server_1.AccountsServer).loginWithService(serviceName, params, infos);
+    const authenticated = await injector
+      .get(server_1.AccountsServer)
+      .loginWithService(serviceName, params, infos);
     return authenticated;
   },
 };

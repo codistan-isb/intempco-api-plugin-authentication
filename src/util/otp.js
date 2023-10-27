@@ -25,11 +25,14 @@ const client = new Twilio(accountSid, authToken);
 export async function sendEmailOTP(
   context,
   email,
-  { bodyTemplate = "accounts/otpEmail", temp }
+  bodyTemplate
+  //{ bodyTemplate = "accounts/otpEmail", temp }
 ) {
   const {
     collections: { Accounts, Shops, users },
   } = context;
+
+  console.log("Body Template is ", bodyTemplate);
 
   //get otp and expiration date
   const { otp, expirationTime } = await generateOTPForResetPassword();
