@@ -1,0 +1,105 @@
+enum loginType {
+  email
+  phoneNo
+  username
+}
+
+enum userType {
+  superAdmin
+  admin
+  user
+}
+
+extend type Account {
+  legacyUsername: String
+  type: loginType
+  userRole: userType
+  languageAccount: String
+  industry: String
+  company: String
+  position: String
+  addressAccount: String
+  cityAccount: String
+  stateAccount: String
+  countryAccount: String
+  zipcode: String
+  telephone1: String
+  telephone2: String
+}
+
+extend type User {
+  userRole: userType
+}
+
+extend input CreateUserInput {
+  username: String = "insecure"
+  legacyUsername: String
+  type: loginType
+  phoneVerified: Boolean = false
+  firstName: String!
+  lastName: String!
+  languageAccount: String!
+  industry: String!
+  company: String!
+  position: String!
+  addressAccount: String!
+  cityAccount: String!
+  stateAccount: String!
+  countryAccount: String!
+  zipcode: String!
+  telephone1: String!
+  telephone2: String!
+}
+
+input CreateAdminInput {
+  email: String!
+  type: loginType!
+}
+
+input VerifyUserOtpInput {
+  userId: ID!
+  otp: Int!
+}
+
+type CreateUserResult {
+  type: loginType
+}
+
+type newUserResult {
+  userId: ID
+  type: loginType
+}
+
+type resetPasswordResult {
+  userId: ID
+  success: Boolean
+}
+
+input LoginUserInput {
+  email: String
+  password: String!
+  username: String
+}
+
+input ResetpasswordInput {
+  loginTypeValue: String!
+}
+
+input resetPasswordAfterOtpVerifyInput {
+  otp: Int!
+  userId: ID!
+  password: String!
+}
+
+extend type Mutation {
+  createUserWithOtp(user: CreateUserInput!): newUserResult
+  addAdmin(user: CreateAdminInput!): newUserResult
+  verifyOTP(user: VerifyUserOtpInput!): Boolean
+  loginUser(user: LoginUserInput!): CreateUserResult
+  resetPasswordOtp(user: ResetpasswordInput!): resetPasswordResult
+  resetPasswordAfterOtpVerify(user: resetPasswordAfterOtpVerifyInput!): Boolean
+}
+
+extend type Query {
+  adminAccounts: [Account]
+}
