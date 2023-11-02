@@ -17,8 +17,6 @@ const mySchema = importAsString("./schema.graphql");
 export default async function register(app) {
   const { accountsGraphQL, accountsServer } = await getAccounts(app);
 
-  console.log("fork test commit");
-
   let ResolverObj = accountsGraphQL.resolvers;
   ResolverObj["Account"] = Account;
   ResolverObj["Mutation"] = Mutation;
