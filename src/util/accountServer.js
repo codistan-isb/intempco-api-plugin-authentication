@@ -70,6 +70,14 @@ export default async (app) => {
     {
       siteUrl: STORE_URL,
       tokenSecret: TOKEN_SECRET,
+      tokenConfigs: {
+        accessToken: {
+          expiresIn: "10d"
+        },
+        refreshToken: {
+          expiresIn: "10d"
+        }
+      },
       db: accountsMongo,
       enableAutologin: true,
       ambiguousErrorMessages: false,
