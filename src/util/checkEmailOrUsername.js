@@ -1,14 +1,13 @@
 export async function checkEmailOrUsername(user) {
   console.log("in checkEmail ", user);
-  let input = user.email ? user.email : user.username;
+  let { loginTypeValue } = user;
   // Regular expression patterns to match email and username
   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-  if (emailPattern.test(input)) {
-    console.log("email");
+  if (emailPattern.test(loginTypeValue)) {
+    console.log("Valid email");
     return true;
   } else {
-    console.log("username");
+    console.log("Invalid email");
     return false;
   }
 }
