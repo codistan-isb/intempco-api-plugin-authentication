@@ -90,7 +90,10 @@ input resetPasswordAfterOtpVerifyInput {
   userId: ID!
   password: String!
 }
-
+type resetUserNamePayload {
+  status: Boolean
+  mesasge: String
+}
 extend type Mutation {
   createUserWithOtp(user: CreateUserInput!): newUserResult
   addAdmin(user: CreateAdminInput!): newUserResult
@@ -98,6 +101,7 @@ extend type Mutation {
   loginUser(user: LoginUserInput!): CreateUserResult
   resetPasswordOtp(user: ResetpasswordInput!): resetPasswordResult
   resetPasswordAfterOtpVerify(user: resetPasswordAfterOtpVerifyInput!): Boolean
+  resetUserName(Email: String!): resetUserNamePayload
 }
 
 extend type Query {

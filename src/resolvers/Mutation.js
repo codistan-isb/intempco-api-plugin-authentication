@@ -1,6 +1,6 @@
 import { generatePhoneOtp } from "../util/otp.js";
 import bcrypt from "bcrypt";
-
+import _ from "lodash";
 import password_1 from "@accounts/password";
 import server_1 from "@accounts/server";
 import ReactionError from "@reactioncommerce/reaction-error";
@@ -649,5 +649,58 @@ export default {
       .loginWithService(serviceName, params, infos);
     console.log("authenticated", authenticated);
     return authenticated;
+  },
+
+  async resetUserName(parent, args, context, info) {
+    // console.log("args", args);
+    const { injector, infos, collections } = context;
+    const { Accounts, users, Shops } = collections;
+
+    let { Email } = args;
+    let userData = await users.findOne({ "emails.address": Email });
+    // console.log("userData", userData);
+    if (!userData) {
+      throw new ReactionError("not-found", "Account not found");
+    }
+    //Finding the account of user
+    const account = await Accounts.findOne({ _id: userData._id });
+    if (!account) throw new ReactionError("not-found", "Account not found");
+    const shop = await Shops.findOne({ shopType: "primary" });
+    if (!shop) throw new ReactionError("not-found", "Shop not found");
+    // console.log("shop data ",shop);
+    let language =
+      (account.profile && account.profile.language) || shop.language;
+    let dataForEmail = {
+      // Reaction Information
+      contactEmail: "info@intempco.com",
+      homepage: _.get(shop, "storefrontUrls.storefrontHomeUrl", null),
+      copyrightDate: new Date().getFullYear(),
+      legalName: _.get(shop, "addressBook[0].company"),
+      physicalAddress: {
+        address: `${_.get(shop, "addressBook[0].address1")} ${_.get(
+          shop,
+          "addressBook[0].address2"
+        )}`,
+        city: _.get(shop, "addressBook[0].city"),
+        region: _.get(shop, "addressBook[0].region"),
+        postal: _.get(shop, "addressBook[0].postal"),
+      },
+      shopName: shop.name,
+      // confirmationUrl: REACTION_IDENTITY_PUBLIC_VERIFY_EMAIL_URL.replace("TOKEN", token),
+      confirmationUrl: userData?.username,
+      userEmailAddress: Email,
+    };
+    let emailSend = await context.mutations.sendEmail(context, {
+      data: dataForEmail,
+      fromShop: shop,
+      templateName: "accounts/resetUsername",
+      language,
+      to: Email,
+    });
+    // console.log("emailSend",emailSend);
+    return {
+      status: true,
+      mesasge: "Email sent Sucessfully",
+    };
   },
 };
