@@ -328,9 +328,10 @@ export default {
           : userData._id,
       };
     }
-
+    let userCheck = user.email?user.email : user.username;
+    console.log("userCheck",userCheck);
     //check if user verified or not
-    let result = await checkEmailOrUsername(user);
+    let result = await checkEmailOrUsername(userCheck);
 
     console.log("Response is ", result);
 
