@@ -391,6 +391,7 @@ export default {
     const accountsServer = injector.get(server_1.AccountsServer);
     const accountsPassword = injector.get(password_1.AccountsPassword);
     const { Accounts, users } = collections;
+    let{loginTypeValue}=user
     let userData;
     // console.log("user", user);
     if (!user.loginTypeValue) {
@@ -399,9 +400,10 @@ export default {
         "Please provide either an email address or a username to proceed."
       );
     }
+    console.log("user",user);
 
     //check if user verified or not
-    let result = await checkEmailOrUsername(user);
+    let result = await checkEmailOrUsername(loginTypeValue);
 
     // console.log("Response is ", result);
 
