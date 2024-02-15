@@ -36,6 +36,7 @@ export default {
     const accountsPassword = injector.get(password_1.AccountsPassword);
     let userId;
     try {
+      console.log("user", user);
       //add user in a document using createUser function
       userId = await accountsPassword.createUser(user);
     } catch (error) {
@@ -133,7 +134,6 @@ export default {
         profile: {
           firstName: "here goes first name",
           lastName: user.lastName,
-
           phone: user.username ? user.username : "",
         },
         shopId: null,
@@ -200,6 +200,10 @@ export default {
         username: user.username,
         userRole: "user",
         type: user.type,
+        firstName: user?.firstName ? user?.firstName : "",
+        lastName: user?.lastName ? user?.lastName : "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
     } catch (error) {
       // If ambiguousErrorMessages is true we obfuscate the email or username already exist error
@@ -224,6 +228,7 @@ export default {
     const adminCount = await Accounts.findOne({
       _id: userId,
     });
+    // console.log("adminCount", adminCount);
     if (userId) {
       const account = {
         _id: userId,
@@ -236,11 +241,14 @@ export default {
           },
         ],
         groups: [],
-        name: null,
+        name: user?.firstName + " " + user?.lastName,
+        username: user.username
+          ? user.username
+          : user?.firstName + " " + user?.lastName,
         profile: {
           firstName: user.firstName ? user.firstName : "",
           lastName: user.lastName ? user.lastName : "",
-          phone: user.username ? user.username : "",
+          phone: user.phone ? user.phone : user.telephone1,
           languageAccount: user.languageAccount ? user.languageAccount : "",
           industry: user.industry ? user.industry : "",
           company: user.company ? user.company : "",
@@ -259,6 +267,8 @@ export default {
         isDeleted: false,
         type: user.type,
         userRole: "user",
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
       const accountAdded = await Accounts.insertOne(account);
     }
@@ -328,8 +338,8 @@ export default {
           : userData._id,
       };
     }
-    let userCheck = user.email?user.email : user.username;
-    console.log("userCheck",userCheck);
+    let userCheck = user.email ? user.email : user.username;
+    console.log("userCheck", userCheck);
     //check if user verified or not
     let result = await checkEmailOrUsername(userCheck);
 
@@ -391,7 +401,7 @@ export default {
     const accountsServer = injector.get(server_1.AccountsServer);
     const accountsPassword = injector.get(password_1.AccountsPassword);
     const { Accounts, users } = collections;
-    let{loginTypeValue}=user
+    let { loginTypeValue } = user;
     let userData;
     // console.log("user", user);
     if (!user.loginTypeValue) {
@@ -400,7 +410,7 @@ export default {
         "Please provide either an email address or a username to proceed."
       );
     }
-    console.log("user",user);
+    console.log("user", user);
 
     //check if user verified or not
     let result = await checkEmailOrUsername(loginTypeValue);
