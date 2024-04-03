@@ -261,14 +261,15 @@ export default {
           telephone1: user.telephone1 ? user.telephone1 : "",
           telephone2: user.telephone2 ? user.telephone2 : "",
         },
+        profileImage: user.profileImage ? user.profileImage : "null",
         shopId: null,
         state: "new",
         userId: userId,
         isDeleted: false,
         type: user.type,
-        userRole: "user",
         createdAt: new Date(),
         updatedAt: new Date(),
+        userRole: user.userRole,
       };
       const accountAdded = await Accounts.insertOne(account);
     }

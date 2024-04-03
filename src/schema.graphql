@@ -25,6 +25,7 @@ extend type Account {
   zipcode: String
   telephone1: String
   telephone2: String
+  profileImage: String
 }
 
 extend type User {
@@ -49,6 +50,8 @@ extend input CreateUserInput {
   zipcode: String!
   telephone1: String!
   telephone2: String!
+  profileImage: String
+  userRole: userType
 }
 
 input CreateAdminInput {
