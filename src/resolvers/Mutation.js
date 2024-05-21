@@ -204,6 +204,8 @@ export default {
         lastName: user?.lastName ? user?.lastName : "",
         createdAt: new Date(),
         updatedAt: new Date(),
+        dob: user.dob,
+        picture: user.picture
       });
     } catch (error) {
       // If ambiguousErrorMessages is true we obfuscate the email or username already exist error
@@ -260,6 +262,8 @@ export default {
           zipcode: user.zipcode ? user.zipcode : "",
           telephone1: user.telephone1 ? user.telephone1 : "",
           telephone2: user.telephone2 ? user.telephone2 : "",
+          dob: user.dob ? user.dob : "",
+          picture: user.picture ? user.picture : ""
         },
         profileImage: user.profileImage ? user.profileImage : "null",
         shopId: null,
