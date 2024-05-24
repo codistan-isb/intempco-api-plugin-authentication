@@ -52,7 +52,7 @@ extend input CreateUserInput {
   telephone2: String!
   profileImage: String
   userRole: userType
-  dob: Date
+  dob: String
   picture: String
 }
 

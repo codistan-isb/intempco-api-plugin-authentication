@@ -36,7 +36,7 @@ export default {
     const accountsPassword = injector.get(password_1.AccountsPassword);
     let userId;
     try {
-      console.log("user", user);
+      // console.log("user", user);
       //add user in a document using createUser function
       userId = await accountsPassword.createUser(user);
     } catch (error) {
@@ -306,7 +306,7 @@ export default {
     let userData;
     let newObj;
 
-    console.log("Input is ", user);
+    // console.log("Input is ", user);
 
     //check if either email or username provided
     if (!(user?.email || user?.username)) {
@@ -348,7 +348,7 @@ export default {
     //check if user verified or not
     let result = await checkEmailOrUsername(userCheck);
 
-    console.log("Response is ", result);
+    // console.log("Response is ", result);
 
     //if user is trying to login from email or username
     if (result) {
@@ -376,18 +376,18 @@ export default {
       );
     }
 
-    console.log("newObj is ", newObj, userData);
+    // console.log("newObj is ", newObj, userData);
     const createdUser = await accountsServer.findUserById(userData._id);
     createdUser.services.password.bcrypt = user.password;
 
-    console.log("createdUser is ", createdUser);
+    // console.log("createdUser is ", createdUser);
 
     //authenticating password
     const authenticated = await injector
       .get(server_1.AccountsServer)
       .loginWithService("password", newObj, infos);
 
-    console.log("authenticated is ", authenticated);
+    // console.log("authenticated is ", authenticated);
 
     return {
       loginResult: authenticated,
@@ -415,7 +415,7 @@ export default {
         "Please provide either an email address or a username to proceed."
       );
     }
-    console.log("user", user);
+    // console.log("user", user);
 
     //check if user verified or not
     let result = await checkEmailOrUsername(loginTypeValue);
@@ -478,7 +478,7 @@ export default {
 
     //finding the user on the basis of userId
     const userObj = await users.findOne({ _id: user.userId });
-    console.log("User Id is ", userObj);
+    // console.log("User Id is ", userObj);
 
     if (userObj) {
       //check if the otp in user document is same as user provided
@@ -567,7 +567,7 @@ export default {
 
     //Finding the user on the basis of userId
     const userObj = await users.findOne({ _id: user.userId });
-    console.log("User Id is ", userObj);
+    // console.log("User Id is ", userObj);
 
     //If user found then check otp and expiration again
     if (userObj) {
@@ -576,7 +576,7 @@ export default {
 
         // Check if the OTP is still valid
         const isOtpValid = expirationTime > new Date().getTime();
-        console.log("isOtpValid ", isOtpValid);
+        // console.log("isOtpValid ", isOtpValid);
         // Use the value of isOtpValid to perform further actions, for example:
         if (isOtpValid) {
           let updateOtp;
@@ -603,8 +603,8 @@ export default {
             );
           }
 
-          console.log("Original Password:", user.password);
-          console.log("Hashed Password:", hashedPassword);
+          // console.log("Original Password:", user.password);
+          // console.log("Hashed Password:", hashedPassword);
 
           const { result } = await users.updateOne(
             { _id: userObj._id },
@@ -642,7 +642,7 @@ export default {
     }
 
     const userId = user.id;
-    console.log("before delete account check");
+    // console.log("before delete account check");
     //checking if account is deleted or not
     const checkedAccount = await context.mutations.deleteAccountCheck(context, {
       userId: user.userId,
@@ -657,15 +657,15 @@ export default {
   },
 
   authenticate: async (_, args, ctx) => {
-    console.log("args", args);
+    // console.log("args", args);
     const { serviceName, params } = args;
     const { injector, infos, collections } = ctx;
     const { users } = collections;
-    console.log("authenticate");
+    // console.log("authenticate");
     const authenticated = await injector
       .get(server_1.AccountsServer)
       .loginWithService(serviceName, params, infos);
-    console.log("authenticated", authenticated);
+    // console.log("authenticated", authenticated);
     return authenticated;
   },
 

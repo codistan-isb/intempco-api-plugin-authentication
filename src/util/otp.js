@@ -117,9 +117,9 @@ export async function generatePhoneOtp(context, number, userId) {
     // The user document does not exist, throw an error or handle it as needed
     throw new ReactionError("not-found", "Account not found");
   }
-  console.log("User Response :- ", UserData._id);
+  // console.log("User Response :- ", UserData._id);
   const account = await Accounts.findOne({ _id: UserData._id });
-  console.log("Account Resonse :-", account);
+  // console.log("Account Resonse :-", account);
   if (!account) throw new ReactionError("not-found", "Account not found");
 
   const updateAccountResult = await users.updateOne(

@@ -46,7 +46,7 @@ export default async (app) => {
               "email.address": email
             });
 
-            console.log("user email already exists ", UserEmailExist);
+            // console.log("user email already exists ", UserEmailExist);
             if (UsernameExist) {
               throw new Error("Username already exists");
             }

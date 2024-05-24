@@ -17,7 +17,7 @@ const mySchema = importAsString("./schema.graphql");
 export default async function register(app) {
   const { accountsGraphQL, accountsServer } = await getAccounts(app);
 
-  console.log("AUTHENTICATION");
+  // console.log("AUTHENTICATION");
 
   let ResolverObj = accountsGraphQL.resolvers;
   ResolverObj["Account"] = Account;
